@@ -34,9 +34,10 @@ const main = async () => {
     // STEP 1: Approve messenger contract to withdraw from our active eth address
     console.log("Approving USDC contract on source chain...")
     const approveTxGasEstimate = await usdcEthSepoliaContract.estimateGas.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount);
-    await usdcEthSepoliaContract.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount, {
+    const approveTx = await usdcEthSepoliaContract.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount, {
         gasLimit: approveTxGasEstimate.add(ethers.BigNumber.from(10000)),
     });
+    await approveTx.wait();
 
     // STEP 2: Burn USDC
     console.log("Burning USDC on source chain...")
@@ -50,15 +51,13 @@ const main = async () => {
     const eventTopic = ethers.utils.id('MessageSent(bytes)')
     const log = burnTxReceipt.logs.find((l) => l.topics[0] === eventTopic);
 
-    let messageBytes;
-    let messageBytesHash;
+    let messageBytes, messageBytesHash;
     if (!log) {
         console.log("No MessageSent found!");
         return;
     } else {
         messageBytes = ethers.utils.defaultAbiCoder.decode(
-            ['bytes'],
-            log.data
+            ['bytes'], log.data
         );
         messageBytesHash = ethers.utils.keccak256(messageBytes[0]);
     }
@@ -80,9 +79,8 @@ const main = async () => {
     console.log("Receiving funds on destination chain...")
     const receiveTx = await arbSepoliaMessageTransmitterContract.receiveMessage(messageBytes[0], attestationSignature);
     const receiveTxReceipt = await receiveTx.wait();
-    console.log("Funds received on destination chain. Great job!")
-    // console.log('Receive Tx Receipt: ', receiveTxReceipt);
-    console.log('Receive Tx Hash: ', receiveTxReceipt.transactionHash);
+    console.log("Funds received on destination chain!");
+    console.log(`See tx details: https://sepolia.arbiscan.io/tx/${receiveTxReceipt.transactionHash}`);
 };
 
 main();

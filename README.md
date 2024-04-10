@@ -14,6 +14,8 @@ CCTP contract addresses for mainnet and testnet can be found [here](https://deve
 1. Clone this repo (star it if you like it!)
 2. Create a `.env` file in the root of the project
 3. Use the `.env.example` to populate your `.env` file
-4. Once everything is set up, run `node index` and your cross-chain transfer will begin! 🏄‍♂️
+4. For `TRANSFER_AMOUNT`, fill in `10000000` in order to transfer 10 USDC
+5. Remember to fund your wallets with ETH on both the source AND destination chain for this script to work!
+6. Once everything is set up, run `node index` and your cross-chain transfer will begin! 🏄‍♂️
 
 Questions? [Join our Discord](https://discord.gg/buildoncircle)!
