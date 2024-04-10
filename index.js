@@ -19,8 +19,8 @@ const main = async () => {
     const ARB_SEPOLIA_MESSAGE_TRANSMITTER_CONTRACT_ADDRESS = process.env.ARB_SEPOLIA_MESSAGE_TRANSMITTER_CONTRACT_ADDRESS;
 
     // initialize contracts using address and ABI
-    const ethSepoliaTokenMessengerContract = new ethers.Contract(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, tokenMessengerAbi, ethSepoliaWallet)
     const usdcEthSepoliaContract = new ethers.Contract(USDC_ETH_SEPOLIA_CONTRACT_ADDRESS, usdcAbi, ethSepoliaWallet);
+    const ethSepoliaTokenMessengerContract = new ethers.Contract(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, tokenMessengerAbi, ethSepoliaWallet)
     const arbSepoliaMessageTransmitterContract = new ethers.Contract(ARB_SEPOLIA_MESSAGE_TRANSMITTER_CONTRACT_ADDRESS, messageTransmitterAbi, arbSepoliaWallet);
 
     // Arbitrum Sepolia destination address
