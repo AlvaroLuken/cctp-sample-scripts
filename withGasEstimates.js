@@ -24,7 +24,7 @@ const main = async () => {
     const arbSepoliaMessageTransmitterContract = new ethers.Contract(ARB_SEPOLIA_MESSAGE_TRANSMITTER_CONTRACT_ADDRESS, messageTransmitterAbi, arbSepoliaWallet);
 
     // Arbitrum Sepolia destination address
-    const mintRecipient = process.env.RECIPIENT_ADDRESS; // does not have to be an EOA
+    const mintRecipient = process.env.RECIPIENT_ADDRESS;
     const destinationAddressInBytes32 = ethers.utils.hexZeroPad(mintRecipient, 32);
     const ARB_SEPOLIA_DESTINATION_DOMAIN = 3;
 
@@ -33,12 +33,18 @@ const main = async () => {
 
     // STEP 1: Approve messenger contract to withdraw from our active eth address
     console.log("Approving USDC contract on source chain...")
-    const approveTx = await usdcEthSepoliaContract.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount);
+    const approveTxGasEstimate = await usdcEthSepoliaContract.estimateGas.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount);
+    const approveTx = await usdcEthSepoliaContract.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount, {
+        gasLimit: approveTxGasEstimate.add(ethers.BigNumber.from(10000)),
+    });
     await approveTx.wait();
 
     // STEP 2: Burn USDC
     console.log("Burning USDC on source chain...")
-    const burnTx = await ethSepoliaTokenMessengerContract.depositForBurn(amount, ARB_SEPOLIA_DESTINATION_DOMAIN, destinationAddressInBytes32, USDC_ETH_SEPOLIA_CONTRACT_ADDRESS);
+    const burnTxGasEstimate = await ethSepoliaTokenMessengerContract.estimateGas.depositForBurn(amount, ARB_SEPOLIA_DESTINATION_DOMAIN, destinationAddressInBytes32, USDC_ETH_SEPOLIA_CONTRACT_ADDRESS);
+    const burnTx = await ethSepoliaTokenMessengerContract.depositForBurn(amount, ARB_SEPOLIA_DESTINATION_DOMAIN, destinationAddressInBytes32, USDC_ETH_SEPOLIA_CONTRACT_ADDRESS, {
+        gasLimit: burnTxGasEstimate.add(ethers.BigNumber.from(10000)),
+    });
     const burnTxReceipt = await burnTx.wait();
 
     // STEP 3: Retrieve message bytes from logs
