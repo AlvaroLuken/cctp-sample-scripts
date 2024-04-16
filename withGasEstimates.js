@@ -24,7 +24,7 @@ const main = async () => {
     const arbSepoliaMessageTransmitterContract = new ethers.Contract(ARB_SEPOLIA_MESSAGE_TRANSMITTER_CONTRACT_ADDRESS, messageTransmitterAbi, arbSepoliaWallet);
 
     // Arbitrum Sepolia destination address
-    const mintRecipient = process.env.RECIPIENT_ADDRESS;
+    const mintRecipient = process.env.RECIPIENT_ADDRESS; // does not have to be an EOA
     const destinationAddressInBytes32 = ethers.utils.hexZeroPad(mintRecipient, 32);
     const ARB_SEPOLIA_DESTINATION_DOMAIN = 3;
 
@@ -33,7 +33,7 @@ const main = async () => {
 
     // STEP 1: Approve messenger contract to withdraw from our active eth address
     console.log("Approving USDC contract on source chain...")
-    const approveTxGasEstimate = await usdcEthSepoliaContract.estimateGas.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount);
+    const approveTxGasEstimate = await usdcEthSepoliaContract.estimateGas.approve(UNISWAP_RELAYER, amount);
     const approveTx = await usdcEthSepoliaContract.approve(ETH_SEPOLIA_TOKEN_MESSENGER_CONTRACT_ADDRESS, amount, {
         gasLimit: approveTxGasEstimate.add(ethers.BigNumber.from(10000)),
     });
@@ -41,6 +41,7 @@ const main = async () => {
 
     // STEP 2: Burn USDC
     console.log("Burning USDC on source chain...")
+    // UNISWAP_RELAYER performs swap from ETH / USDC
     const burnTxGasEstimate = await ethSepoliaTokenMessengerContract.estimateGas.depositForBurn(amount, ARB_SEPOLIA_DESTINATION_DOMAIN, destinationAddressInBytes32, USDC_ETH_SEPOLIA_CONTRACT_ADDRESS);
     const burnTx = await ethSepoliaTokenMessengerContract.depositForBurn(amount, ARB_SEPOLIA_DESTINATION_DOMAIN, destinationAddressInBytes32, USDC_ETH_SEPOLIA_CONTRACT_ADDRESS, {
         gasLimit: burnTxGasEstimate.add(ethers.BigNumber.from(10000)),
@@ -78,7 +79,9 @@ const main = async () => {
 
     // STEP 5: Using the message bytes and signature receive the funds on destination chain and address
     console.log("Receiving funds on destination chain...")
+    // swap USDC right back to ETH/UNI/AAVE
     const receiveTx = await arbSepoliaMessageTransmitterContract.receiveMessage(messageBytes[0], attestationSignature);
+    // a chain of calls
     const receiveTxReceipt = await receiveTx.wait();
     console.log("Funds received on destination chain!");
     console.log(`See tx details: https://sepolia.arbiscan.io/tx/${receiveTxReceipt.transactionHash}`);

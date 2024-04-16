@@ -10,7 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@solana/buffer-layout": "^4.0.1",
+    "@solana/spl-token": "^0.4.3",
+    "@solana/web3.js": "^1.91.4",
+    "bs58": "^5.0.0",
     "dotenv": "^16.4.5",
-    "ethers": "5.7"
+    "ethers": "^6.11.1"
   }
 }
