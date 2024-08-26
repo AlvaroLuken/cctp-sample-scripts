@@ -1,13 +1,15 @@
 ## Simple Cross-Chain Transfer of USDC using CCTP
 
-This script sets up a cross-chain transfer with the following specs:
+This script (`index.js`) sets up a cross-chain transfer with the following specs:
 
 1. **Source chain**: Ethereum Sepolia
 2. **Destination chain**: Arbitrum Sepolia
 
-This script uses [ethers.js (v5.7)](https://docs.ethers.org/v5/).
+⚠️ NOTE: This script uses [ethers.js (v5.7)](https://docs.ethers.org/v5/).
 
 CCTP contract addresses for mainnet and testnet can be found [here](https://developers.circle.com/stablecoins/docs/evm-smart-contracts).
+
+## Check out the `/scripts-by-chain` folder to see scripts to/from other chains
 
 ## Quick Setup
 

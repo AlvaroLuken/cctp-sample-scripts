@@ -5,6 +5,8 @@ const bs58 = require('bs58');
 const ethers = require('ethers');
 const BufferLayout = require('@solana/buffer-layout');
 
+// NOTE: THIS IS AN INCOMPLETE SCRIPT AND DOES NOT WORK!
+
 const main = async () => {
     let connection = new solanaWeb3.Connection(process.env.SOLANA_DEVNET_RPC);
 
